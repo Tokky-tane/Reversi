@@ -74,7 +74,7 @@ void print_board(int board[N][N]) {
 		}
 		putchar('|');
 		for (int j = 0; j < N; j++) {
-			switch (board[i][j]) {
+			switch (board[j][i]) {
 			case 0:
 				putchar(' ');
 				break;
@@ -129,25 +129,42 @@ int check_WB(int k, int board[N][N]) {
 	return 0;
 }
 
-void change_board(int k, int x, int y, int board[N][N]) {
+void change_board(int player_frame, int x, int y, int board[N][N]) {
+	int X = x, Y = y;
+	int rival_frame = player_frame*-1;
+
+	board[X][Y] = player_frame;
+
+	while (board[X + 1][y] == rival_frame) {
+		X++;
+	}
+	if (board[X + 1][y] == player_frame) {
+		X = x;
+		while (board[X + 1][y] == rival_frame) {
+			board[X + 1][y] = player_frame;
+			X++;
+		}
+	}
+	X = x;
 }
 
-int check_change(int player_frame, int input_x, int input_y, int board[N][N]) {
+int check_change(int player_frame, int x, int y, int board[N][N]) {
 	int rival_frame = player_frame * -1;
-	int x = input_x, y = input_y;
+	int X = x, Y = y;
 	int check = 0;
 
-	if (board[input_x][input_y] != 0)
+	if (board[x][y] != 0)
 		return check;
 
-	while (board[x + 1][input_y] == rival_frame) {
+	while (board[X + 1][y] == rival_frame) {
 		check = 1;
-		x++;
+		X++;
 	}
-	if(board[x + 1][input_y] && check == 1) {
+	if(board[X + 1][y] && check == 1) {
 		check = 1;
 		return check;
 	}
+	check = 0;
 
 	return 0;
 }
