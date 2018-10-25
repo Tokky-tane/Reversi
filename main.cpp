@@ -135,6 +135,7 @@ void change_board(int player_frame, int x, int y, int board[N][N]) {
 
 	board[X][Y] = player_frame;
 
+	// âEë§ÇÃó†ï‘Çµ
 	while (board[X + 1][y] == rival_frame) {
 		X++;
 	}
@@ -143,6 +144,19 @@ void change_board(int player_frame, int x, int y, int board[N][N]) {
 		while (board[X + 1][y] == rival_frame) {
 			board[X + 1][y] = player_frame;
 			X++;
+		}
+	}
+	X = x;
+
+	//Å@ç∂ë§ÇÃó†ï‘Çµ
+	while (board[X - 1][y] == rival_frame) {
+		X--;
+	}
+	if (board[X - 1][y] == player_frame) {
+		X = x;
+		while (board[X - 1][y] == rival_frame) {
+			board[X - 1][y] = player_frame;
+			X--;
 		}
 	}
 	X = x;
@@ -156,6 +170,7 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
 	if (board[x][y] != 0)
 		return check;
 
+	// âEë§ÇÃîªíË
 	while (board[X + 1][y] == rival_frame) {
 		check = 1;
 		X++;
@@ -165,6 +180,19 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
 		return check;
 	}
 	check = 0;
+	X = x;
+
+	// ç∂ë§ÇÃîªíË
+	while (board[X - 1][y] == rival_frame) {
+		check = 1;
+		X--;
+	}
+	if (board[X - 1][y] && check == 1) {
+		check = 1;
+		return check;
+	}
+	check = 0;
+	X = x;
 
 	return 0;
 }
