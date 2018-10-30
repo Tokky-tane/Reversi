@@ -200,5 +200,15 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
     check = 0;
     X = x;
 
+    // 上側の判定
+    while (board[x][Y + 1] == rival_frame) {
+        check = 1;
+        Y++;
+    }
+    if (board[x][Y + 1] == player_frame && check == 1) {
+        check = 1;
+        return check;
+    }
+
     return 0;
 }
