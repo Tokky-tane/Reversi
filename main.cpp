@@ -178,6 +178,19 @@ void change_board(int player_frame, int x, int y, int board[N][N]) {
         }
     }
     Y = y;
+
+    // 下側の裏返し
+    while (board[x][Y - 1] == rival_frame) {
+        Y--;
+    }
+    if (board[x][Y - 1] == player_frame) {
+        Y = y;
+        while (board[x][Y - 1] == rival_frame) {
+            board[x][Y - 1] = player_frame;
+            Y--;
+        }
+    }
+    Y = y;
 }
 
 int check_change(int player_frame, int x, int y, int board[N][N]) {
@@ -187,7 +200,7 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
 
     if (board[x][y] != 0)
         return check;
-    
+
 
     // 右側の判定
     while (board[X + 1][y] == rival_frame) {
@@ -222,6 +235,20 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
         check = 1;
         return check;
     }
+    check = 0;
+    Y = y;
+
+    // 下側の判定
+    while (board[x][Y - 1] == rival_frame) {
+        check = 1;
+        Y--;
+    }
+    if (board[x][Y - 1] == player_frame && check == 1) {
+        check = 1;
+        return check;
+    }
+    check = 0;
+    Y = y;
 
     return 0;
 }
