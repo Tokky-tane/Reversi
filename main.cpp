@@ -11,13 +11,13 @@ void print_board(int board[N][N]);
 
 int check_finish(int t, int board[N][N]);
 
-struct INPUT_DATA input_key(int k, int board[N][N]);
+struct INPUT_DATA input_key(int player_frame, int board[N][N]);
 
 int check_WB(int k, int board[N][N]);
 
-void change_board(int k, int x, int y, int board[N][N]);
+void change_board(int player_frame, int x, int y, int board[N][N]);
 
-int check_change(int k, int i, int j, int board[N][N]);
+int check_change(int player_frame, int x, int y, int board[N][N]);
 
 struct INPUT_DATA {
     int x;
