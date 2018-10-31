@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
+#include <string.h>
 
 #define N 10
 #define T 100
@@ -25,25 +26,27 @@ struct INPUT_DATA {
 };
 
 int main(void) {
-    int board[N][N] = {0};
-    int t;
-    int player_frame;
+    int board[N][N][N] = {0};
+    int turn;
+    int player_frame[T];
     struct INPUT_DATA input_data;
 
-    make_board(board);
-    print_board(board);
+    make_board(board[0]);
+    print_board(board[0]);
 
-    t = 0;
-    player_frame = 1;
-    while (/*check_finish(t,board)*/ 1) {
-        t++;
+    turn = 0;
+    player_frame[0] = 1;
+    while (/*check_finish(turn,board)*/ 1) {
         //player_frame = check_WB(player_frame, board);
-        input_data = input_key(player_frame, board);
+        input_data = input_key(player_frame[turn], board[turn]);
 
-        change_board(player_frame, input_data.x, input_data.y, board);
+        memcpy(board[turn + 1], board[turn], sizeof(int) * N * N);
 
-        print_board(board);
-        player_frame *= -1;
+        change_board(player_frame[turn], input_data.x, input_data.y, board[turn + 1]);
+
+        print_board(board[turn + 1]);
+        player_frame[turn + 1] = player_frame[turn] * -1;
+        turn++;
     }
 }
 
