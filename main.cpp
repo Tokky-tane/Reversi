@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define N 10
 #define T 100
@@ -20,6 +21,10 @@ void change_board(int player_frame, int x, int y, int board[N][N]);
 
 int check_change(int player_frame, int x, int y, int board[N][N]);
 
+void rewind_move(int destination, int *source);
+
+void undo_move(int *turn);
+
 struct INPUT_DATA {
     int x;
     int y;
@@ -36,13 +41,27 @@ int main(void) {
 
     turn = 0;
     player_frame[0] = 1;
-    while (/*check_finish(turn,board)*/ 1) {
+    while (/*check_finish(turn, board)*/1) {
         //player_frame = check_WB(player_frame, board);
+
         input_data = input_key(player_frame[turn], board[turn]);
 
-        memcpy(board[turn + 1], board[turn], sizeof(int) * N * N);
+        switch (input_data.x) {
+            case -2:
+                rewind_move(input_data.y, &turn);
+                print_board(board[turn]);
+                continue;
 
-        change_board(player_frame[turn], input_data.x, input_data.y, board[turn + 1]);
+            case -1:
+                undo_move(&turn);
+                print_board(board[turn]);
+                continue;
+
+            default:
+                memcpy(board[turn + 1], board[turn], sizeof(int) * N * N);
+                change_board(player_frame[turn], input_data.x, input_data.y, board[turn + 1]);
+                break;
+        }
 
         print_board(board[turn + 1]);
         player_frame[turn + 1] = player_frame[turn] * -1;
@@ -113,23 +132,43 @@ struct INPUT_DATA input_key(int player_frame, int board[N][N]) {
 
     struct INPUT_DATA input_key = {0, 0};
 
-    while (1) {
+    char x_temp;
+    char temp[10];
+    int is_input_success = 0;
+
+    do {
         printf("player[%c]のターン\n", (player_frame == 1) ? 'O' : '*');
         printf("座標を入力(x,y)=");
-        scanf("%c,%d", &input_key.x, &input_key.y);
-        while (getchar() != '\n');
 
-        input_key.x -= 96;
+        scanf("%s", temp);
 
-        if (!((0 < input_key.x && input_key.x < N) &&
-              (0 < input_key.y && input_key.y < N))) {
-            puts("ボードの範囲外です\n");
-        } else if (check_change(player_frame, input_key.x, input_key.y, board) == 0)
-            puts("選択したマスにはおけません\n");
-        else {
-            break;
+        if (strcmp("exit", temp) == 0)
+            exit(0);
+        else if (strcmp(temp, "undo") == 0) {
+            puts("undo");
+            input_key.x = -1;
+            return input_key;
+        } else if (strcmp(temp, "replace") == 0) {
+            input_key.x = -2;
+            printf("移動先ターン数=");
+            scanf("%d", &input_key.y);
+            printf("dest=%d\n", input_key.y);
+            return input_key;
+        } else if (sscanf(temp, "%c,%d", &x_temp, &input_key.y) != 2) {
+            puts("入力された値が正しくありません");
+        } else {
+            input_key.x = x_temp - 96;
+            if (!((0 < input_key.x && input_key.x < N) &&
+                  (0 < input_key.y && input_key.y < N))) {
+                puts("ボードの範囲外です\n");
+            } else if (check_change(player_frame, input_key.x, input_key.y, board) == 0)
+                puts("選択したマスにはおけません\n");
+            else {
+                is_input_success = 1;
+            }
         }
-    }
+    } while (is_input_success == 0);
+
     return input_key;
 }
 
@@ -373,4 +412,24 @@ int check_change(int player_frame, int x, int y, int board[N][N]) {
     }
 
     return 0;
+}
+
+
+void rewind_move(int destination, int *source) {
+    if (destination < 0 || *source < destination) {
+        puts("入力されたターンはありません");
+        puts("0~現在のターン数で指定してください");
+        return;
+    }
+
+    printf("%dターン目に戻りました\n", destination);
+    *source = destination;
+}
+
+void undo_move(int *turn) {
+    if (*turn == 0) {
+        puts("これ以上戻れません");
+        return;
+    }
+    rewind_move(*turn - 1, turn);
 }
